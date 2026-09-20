@@ -16,9 +16,30 @@ META_FILE=DATA_DIR/"metadata.json"
 # E = PO NUMBER, K = QUANTITY ORDERED, M = MODEL NUMBER, S = ESTIMATED SHIP DATE
 COLUMN_INDEXES={"PO Number":4,"Quantity Ordered":10,"Model Number":12,"Estimated Ship Date":18}
 
+
+def sanitize_samsung_xlsx(path):
+    """Make Samsung's XLSX export compatible with openpyxl."""
+    import tempfile, zipfile, re
+    tmp = Path(tempfile.mkstemp(suffix=".xlsx")[1])
+    with zipfile.ZipFile(path, "r") as zin, zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zout:
+        for info in zin.infolist():
+            data = zin.read(info.filename)
+            if info.filename == "xl/styles.xml":
+                text = data.decode("utf-8")
+                # Samsung exports can include an unsupported count attribute on xf records.
+                text = re.sub(r'(<(?:\w+:)?xf\b[^>]*?)\s+count="[^"]*"', r'\1', text)
+                data = text.encode("utf-8")
+            zout.writestr(info, data)
+    return tmp
+
 def read_samsung_excel(path):
     # Read raw sheet so Samsung can change header wording without breaking the page.
-    raw=pd.read_excel(path,dtype=object)
+    clean_path=sanitize_samsung_xlsx(path)
+    try:
+        raw=pd.read_excel(clean_path,dtype=object)
+    finally:
+        try: clean_path.unlink()
+        except Exception: pass
     if raw.shape[1] < 19:
         raise ValueError("This file does not contain Column S. Please upload the Samsung orderTracking .xlsx file.")
     out=pd.DataFrame()
