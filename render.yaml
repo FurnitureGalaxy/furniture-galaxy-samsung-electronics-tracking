@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: furniture-galaxy-order-tracking
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /health
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+      - key: SECRET_KEY
+        generateValue: true
+    disk:
+      name: order-tracking-data
+      mountPath: /var/data
+      sizeGB: 1

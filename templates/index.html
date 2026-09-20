@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Furniture Galaxy Samsung Order Tracking</title>
+<style>
+:root{--navy:#111827;--gold:#d6a21d;--bg:#f5f6f8;--red:#b42318}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#171717}
+.wrap{max-width:1200px;margin:auto;padding:22px}.head{background:var(--navy);color:#fff;padding:24px;border-radius:14px}
+h1{margin:0 0 7px;font-size:28px}.updated{color:#f5d36b;font-weight:700}
+.card{background:#fff;border-radius:14px;padding:18px;margin-top:16px;box-shadow:0 2px 10px #0000000d}
+.grid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}.grid input,.upload input{width:100%;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+button,.btn{border:0;border-radius:8px;padding:13px 18px;background:var(--navy);color:white;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.note{font-size:13px;color:#666;margin-top:7px}.msg{padding:12px;border-radius:8px;background:#fff5cc;margin-top:12px}
+.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:12px;border-bottom:1px solid #e5e5e5;text-align:left}th{background:#f0f1f3;position:sticky;top:0}
+.etahead{white-space:nowrap}.count{font-weight:700;margin-bottom:10px}
+details summary{cursor:pointer;font-weight:700}.upload{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:12px}
+@media(max-width:700px){.wrap{padding:10px}.grid,.upload{grid-template-columns:1fr}h1{font-size:23px}}
+</style>
+</head>
+<body><div class="wrap">
+<div class="head"><h1>Furniture Galaxy Samsung Order Tracking</h1>
+<div class="updated">Last Updated: {{ last_updated if last_updated else "No file uploaded yet" }}</div></div>
+{% with messages=get_flashed_messages() %}{% if messages %}{% for m in messages %}<div class="msg">{{m}}</div>{% endfor %}{% endif %}{% endwith %}
+{% if error %}<div class="msg">{{error}}</div>{% endif %}
+<div class="card">
+<form method="get" class="grid">
+<input name="po" value="{{po}}" placeholder="Search PO Number">
+<input name="model" value="{{model}}" placeholder="Search Model Number">
+<button type="submit">Search</button>
+</form><div class="note">Search by PO number, model number, or both. Partial searches are supported.</div>
+</div>
+<div class="card">
+<div class="count">{{rows|length}} matching item(s)</div>
+<div class="tablewrap"><table><thead><tr>
+<th>PO NUMBER</th><th>MODEL NUMBER</th><th>QUANTITY ORDERED</th><th class="etahead">ESTIMATED SHIP DATE — PLEASE ADD 10 DAYS TO THIS</th>
+</tr></thead><tbody>
+{% for r in rows %}<tr><td>{{r["PO Number"]}}</td><td><b>{{r["Model Number"]}}</b></td><td>{{r["Quantity Ordered"]}}</td><td>{{r["Estimated Ship Date"]}}</td></tr>
+{% endfor %}
+{% if not rows %}<tr><td colspan="4">No matching orders found.</td></tr>{% endif %}
+</tbody></table></div></div>
+<div class="card"><details><summary>Upload New Samsung Order Tracking Excel</summary>
+<form method="post" action="/upload" enctype="multipart/form-data" class="upload">
+<input type="file" name="file" accept=".xlsx" required><button type="submit">Upload & Replace Data</button>
+</form><div class="note">A successful upload automatically updates the Last Updated date and time.</div>
+</details></div>
+</div></body></html>
